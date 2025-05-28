@@ -1,0 +1,421 @@
+
+
+CREATE TABLE Categories 
+    ( 
+     CATEGORY_ID   INTEGER  NOT NULL , 
+     CATEGORY_NAME VARCHAR2 (100) NOT NULL , 
+     DESCRIPTION   CLOB  NOT NULL , 
+     DEPARTMENT    VARCHAR2 (50) NOT NULL 
+    ) 
+;
+
+ALTER TABLE Categories 
+    ADD CONSTRAINT Categories_PK PRIMARY KEY ( CATEGORY_ID ) ;
+
+CREATE TABLE Customers 
+    ( 
+     CUSTOMER_ID       INTEGER  NOT NULL , 
+     FULL_NAME         VARCHAR2 (100)  NOT NULL , 
+     EMAIL             VARCHAR2 (100)  NOT NULL , 
+     PHONE             VARCHAR2 (30) , 
+     ADDRESS           VARCHAR2 (100)  NOT NULL , 
+     REGISTRATION_DATE DATE  NOT NULL , 
+     LOYALTY_LEVEL     VARCHAR2 (30) 
+    ) 
+;
+
+ALTER TABLE Customers 
+    ADD CONSTRAINT Customers_PK PRIMARY KEY ( CUSTOMER_ID ) ;
+
+CREATE TABLE Employees 
+    ( 
+     EMPLOYEE_ID INTEGER  NOT NULL , 
+     FULL_NAME   VARCHAR2 (100)  NOT NULL , 
+     EMAIL       VARCHAR2 (100)  NOT NULL , 
+     PHONE       VARCHAR2 (30) , 
+     POSITION    VARCHAR2 (50) , 
+     SALARY      NUMBER (6,2)  NOT NULL , 
+     HIRE_DATE   DATE  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Employees 
+    ADD CONSTRAINT Employees_PK PRIMARY KEY ( EMPLOYEE_ID ) ;
+
+CREATE TABLE Order_Items 
+    ( 
+     ORDER_ITEM_ID                   INTEGER  NOT NULL , 
+     ORDER_ID                        INTEGER  NOT NULL , 
+     PRODUCT_ID                      INTEGER  NOT NULL , 
+     QUANTITY                        INTEGER  NOT NULL , 
+     UNIT_PRICE                      NUMBER (6,2)  NOT NULL , 
+     SUBTOTAL                        NUMBER (6,2)  NOT NULL , 
+     DISCOUNT                        NUMBER (6,2)  NOT NULL , 
+     Products_PRODUCT_ID             INTEGER  NOT NULL , 
+     ProductsC_CATEGORY_ID INTEGER  NOT NULL , 
+     Products_SUPPLIER_ID1           INTEGER  NOT NULL , 
+     Orders_ORDER_ID                 INTEGER  NOT NULL , 
+     Orders_EMPLOYEE_ID1             INTEGER  NOT NULL , 
+     Orders_CUSTOMER_ID1             INTEGER  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Order_Items 
+    ADD CONSTRAINT OrderItems_PK PRIMARY KEY ( ORDER_ITEM_ID, Products_PRODUCT_ID, ProductsC_CATEGORY_ID, Products_SUPPLIER_ID1, Orders_ORDER_ID, Orders_EMPLOYEE_ID1, Orders_CUSTOMER_ID1 ) ;
+
+CREATE TABLE Orders 
+    ( 
+     ORDER_ID              INTEGER  NOT NULL , 
+     CUSTOMER_ID           INTEGER  NOT NULL , 
+     EMPLOYEE_ID           INTEGER  NOT NULL , 
+     TOTAL_AMOUNT          NUMBER (6,2)  NOT NULL , 
+     PAYMENT_METHOD        VARCHAR2 (50)  NOT NULL , 
+     SHIPPING_ADDRESS      VARCHAR2 (100) , 
+     Employees_EMPLOYEE_ID INTEGER  NOT NULL , 
+     Customers_CUSTOMER_ID INTEGER  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Orders 
+    ADD CONSTRAINT Orders_PK PRIMARY KEY ( ORDER_ID, Employees_EMPLOYEE_ID, Customers_CUSTOMER_ID ) ;
+
+CREATE TABLE Products 
+    ( 
+     PRODUCT_ID             INTEGER  NOT NULL , 
+     PRODUCT_NAME           VARCHAR2 (100)  NOT NULL , 
+     PRICE                  NUMBER (6,2)  NOT NULL , 
+     CATEGORY_ID            INTEGER  NOT NULL , 
+     STOCK                  INTEGER  NOT NULL , 
+     SUPPLIER_ID            INTEGER  NOT NULL , 
+     ADDED_DATE             DATE  NOT NULL , 
+     Categories_CATEGORY_ID INTEGER  NOT NULL , 
+     Suppliers_SUPPLIER_ID  INTEGER  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Products 
+    ADD CONSTRAINT Products_PK PRIMARY KEY ( PRODUCT_ID, Categories_CATEGORY_ID, Suppliers_SUPPLIER_ID ) ;
+
+CREATE TABLE Suppliers 
+    ( 
+     SUPPLIER_ID  INTEGER  NOT NULL , 
+     COMPANY_NAME VARCHAR2 (100)  NOT NULL , 
+     CONTACT_NAME VARCHAR2 (100)  NOT NULL , 
+     EMAIL        VARCHAR2 (100)  NOT NULL , 
+     PHONE        VARCHAR2 (30) NOT NULL , 
+     ADDRESS      VARCHAR2 (100)  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Suppliers 
+    ADD CONSTRAINT Suppliers_PK PRIMARY KEY ( SUPPLIER_ID ) ;
+
+ALTER TABLE Order_Items 
+    ADD CONSTRAINT Order_Items_Orders_FK FOREIGN KEY 
+    ( 
+     Orders_ORDER_ID,
+     Orders_EMPLOYEE_ID1,
+     Orders_CUSTOMER_ID1
+    ) 
+    REFERENCES Orders 
+    ( 
+     ORDER_ID,
+     Employees_EMPLOYEE_ID,
+     Customers_CUSTOMER_ID
+    ) 
+;
+
+ALTER TABLE Order_Items 
+    ADD CONSTRAINT Order_Items_Products_FK FOREIGN KEY 
+    ( 
+     Products_PRODUCT_ID,
+     Products_Categories_CATEGORY_ID,
+     Products_SUPPLIER_ID1
+    ) 
+    REFERENCES Products 
+    ( 
+     PRODUCT_ID,
+     Categories_CATEGORY_ID,
+     Suppliers_SUPPLIER_ID
+    ) 
+;
+
+ALTER TABLE Orders 
+    ADD CONSTRAINT Orders_Customers_FK FOREIGN KEY 
+    ( 
+     Customers_CUSTOMER_ID
+    ) 
+    REFERENCES Customers 
+    ( 
+     CUSTOMER_ID
+    ) 
+;
+
+ALTER TABLE Orders 
+    ADD CONSTRAINT Orders_Employees_FK FOREIGN KEY 
+    ( 
+     Employees_EMPLOYEE_ID
+    ) 
+    REFERENCES Employees 
+    ( 
+     EMPLOYEE_ID
+    ) 
+;
+
+ALTER TABLE Products 
+    ADD CONSTRAINT Products_Categories_FK FOREIGN KEY 
+    ( 
+     Categories_CATEGORY_ID
+    ) 
+    REFERENCES Categories 
+    ( 
+     CATEGORY_ID
+    ) 
+;
+
+ALTER TABLE Products 
+    ADD CONSTRAINT Products_Suppliers_FK FOREIGN KEY 
+    ( 
+     Suppliers_SUPPLIER_ID
+    ) 
+    REFERENCES Suppliers 
+    ( 
+     SUPPLIER_ID
+    ) 
+;
+
+
+//Inserts
+//Categories Inserts
+INSERT INTO Categories (CATEGORY_ID, CATEGORY_NAME, DESCRIPTION, DEPARTMENT)
+VALUES (1, 'Electronics', 'Electronic devices and accessories for home and office use', 'Technology');
+
+INSERT INTO Categories (CATEGORY_ID, CATEGORY_NAME, DESCRIPTION, DEPARTMENT)
+VALUES (2, 'Home-Kitchen', 'Products for cooking, dining, and home decoration', 'Household');
+
+INSERT INTO Categories (CATEGORY_ID, CATEGORY_NAME, DESCRIPTION, DEPARTMENT)
+VALUES (3, 'Books', 'Fiction and non-fiction books for all ages', 'Media');
+
+INSERT INTO Categories (CATEGORY_ID, CATEGORY_NAME, DESCRIPTION, DEPARTMENT)
+VALUES (4, 'Clothing', 'Men, women, and children apparel', 'Fashion');
+
+INSERT INTO Categories (CATEGORY_ID, CATEGORY_NAME, DESCRIPTION, DEPARTMENT)
+VALUES (5, 'Sports-Outdoors', 'Equipment and apparel for sports and outdoor activities', 'Lifestyle');
+
+INSERT INTO Categories (CATEGORY_ID, CATEGORY_NAME, DESCRIPTION, DEPARTMENT)
+VALUES (6, 'Beauty-Personal Care', 'Skincare, makeup, and personal hygiene products', 'Health');
+
+//Suppliers Inserts
+INSERT INTO Suppliers (SUPPLIER_ID, COMPANY_NAME, CONTACT_NAME, EMAIL, PHONE, ADDRESS)
+VALUES (101, 'Tech Innovations Inc.', 'John Smith', 'johnsmith@techinnovations.com', '555-123-4567', '123 Tech Ave, San Francisco, CA 94105');
+
+INSERT INTO Suppliers (SUPPLIER_ID, COMPANY_NAME, CONTACT_NAME, EMAIL, PHONE, ADDRESS)
+VALUES (102, 'Home Essentials Co.', 'Mary Johnson', 'mary@homeessentials.com', '555-234-5678', '456 Home Blvd, Chicago, IL 60601');
+
+INSERT INTO Suppliers (SUPPLIER_ID, COMPANY_NAME, CONTACT_NAME, EMAIL, PHONE, ADDRESS)
+VALUES (103, 'BookWorld Publishing', 'Robert Brown', 'robert@bookworld.com', '555-345-6789', '789 Literary Lane, New York, NY 10001');
+
+INSERT INTO Suppliers (SUPPLIER_ID, COMPANY_NAME, CONTACT_NAME, EMAIL, PHONE, ADDRESS)
+VALUES (104, 'Fashion Forward Ltd.', 'Emma Davis', 'emma@fashionforward.com', '555-456-7890', '101 Style Street, Los Angeles, CA 90036');
+
+INSERT INTO Suppliers (SUPPLIER_ID, COMPANY_NAME, CONTACT_NAME, EMAIL, PHONE, ADDRESS)
+VALUES (105, 'Active Life Sports', 'Michael Wilson', 'michael@activelife.com', '555-567-8901', '202 Sports Court, Denver, CO 80202');
+
+INSERT INTO Suppliers (SUPPLIER_ID, COMPANY_NAME, CONTACT_NAME, EMAIL, PHONE, ADDRESS)
+VALUES (106, 'Beauty Essentials Inc.', 'Sarah Miller', 'sarah@beautyessentials.com', '555-678-9012', '303 Glamour Way, Miami, FL 33101');
+
+//Customers Inserts
+INSERT INTO Customers (CUSTOMER_ID, FULL_NAME, EMAIL, PHONE, ADDRESS, REGISTRATION_DATE, LOYALTY_LEVEL)
+VALUES (1001, 'Alice Williams', 'alice@example.com', '555-111-2222', '123 Main St, Boston, MA 02108', TO_DATE('2023-01-15', 'YYYY-MM-DD'), 'Gold');
+
+INSERT INTO Customers (CUSTOMER_ID, FULL_NAME, EMAIL, PHONE, ADDRESS, REGISTRATION_DATE, LOYALTY_LEVEL)
+VALUES (1002, 'Bob Johnson', 'bob@example.com', '555-222-3333', '456 Oak Ave, Seattle, WA 98101', TO_DATE('2023-02-20', 'YYYY-MM-DD'), 'Silver');
+
+INSERT INTO Customers (CUSTOMER_ID, FULL_NAME, EMAIL, PHONE, ADDRESS, REGISTRATION_DATE, LOYALTY_LEVEL)
+VALUES (1003, 'Carol Martinez', 'carol@example.com', '555-333-4444', '789 Pine St, Austin, TX 78701', TO_DATE('2023-03-10', 'YYYY-MM-DD'), 'Bronze');
+
+INSERT INTO Customers (CUSTOMER_ID, FULL_NAME, EMAIL, PHONE, ADDRESS, REGISTRATION_DATE, LOYALTY_LEVEL)
+VALUES (1004, 'David Lee', 'david@example.com', '555-444-5555', '101 Elm Rd, Portland, OR 97201', TO_DATE('2023-04-05', 'YYYY-MM-DD'), 'Gold');
+
+INSERT INTO Customers (CUSTOMER_ID, FULL_NAME, EMAIL, PHONE, ADDRESS, REGISTRATION_DATE, LOYALTY_LEVEL)
+VALUES (1005, 'Eva Rodriguez', 'eva@example.com', '555-555-6666', '202 Maple Dr, Atlanta, GA 30303', TO_DATE('2023-05-12', 'YYYY-MM-DD'), 'Silver');
+
+INSERT INTO Customers (CUSTOMER_ID, FULL_NAME, EMAIL, PHONE, ADDRESS, REGISTRATION_DATE, LOYALTY_LEVEL)
+VALUES (1006, 'Frank Wilson', 'frank@example.com', '555-666-7777', '303 Birch Ln, Nashville, TN 37203', TO_DATE('2023-06-25', 'YYYY-MM-DD'), 'Bronze');
+
+//Employees Inserts
+INSERT INTO Employees (EMPLOYEE_ID, FULL_NAME, EMAIL, PHONE, POSITION, SALARY, HIRE_DATE)
+VALUES (501, 'James Taylor', 'james@company.com', '555-111-0000', 'Sales Manager', 5500.00, TO_DATE('2022-01-10', 'YYYY-MM-DD'));
+
+INSERT INTO Employees (EMPLOYEE_ID, FULL_NAME, EMAIL, PHONE, POSITION, SALARY, HIRE_DATE)
+VALUES (502, 'Sofia Garcia', 'sofia@company.com', '555-222-0000', 'Customer Service', 3500.00, TO_DATE('2022-03-15', 'YYYY-MM-DD'));
+
+INSERT INTO Employees (EMPLOYEE_ID, FULL_NAME, EMAIL, PHONE, POSITION, SALARY, HIRE_DATE)
+VALUES (503, 'William Chen', 'william@company.com', '555-333-0000', 'Warehouse Manager', 4500.00, TO_DATE('2022-04-22', 'YYYY-MM-DD'));
+
+INSERT INTO Employees (EMPLOYEE_ID, FULL_NAME, EMAIL, PHONE, POSITION, SALARY, HIRE_DATE)
+VALUES (504, 'Olivia Kim', 'olivia@company.com', '555-444-0000', 'Marketing Specialist', 4000.00, TO_DATE('2022-06-01', 'YYYY-MM-DD'));
+
+INSERT INTO Employees (EMPLOYEE_ID, FULL_NAME, EMAIL, PHONE, POSITION, SALARY, HIRE_DATE)
+VALUES (505, 'Ethan Patel', 'ethan@company.com', '555-555-0000', 'IT Support', 4200.00, TO_DATE('2022-08-12', 'YYYY-MM-DD'));
+
+INSERT INTO Employees (EMPLOYEE_ID, FULL_NAME, EMAIL, PHONE, POSITION, SALARY, HIRE_DATE)
+VALUES (506, 'Ava Nguyen', 'ava@company.com', '555-666-0000', 'Sales Associate', 3200.00, TO_DATE('2022-10-05', 'YYYY-MM-DD'));
+
+//Products Inserts
+INSERT INTO Products (PRODUCT_ID, PRODUCT_NAME, PRICE, CATEGORY_ID, STOCK, SUPPLIER_ID, ADDED_DATE, Categories_CATEGORY_ID, Suppliers_SUPPLIER_ID)
+VALUES (2001, 'Laptop Pro X', 1299.99, 1, 50, 101, TO_DATE('2023-01-05', 'YYYY-MM-DD'), 1, 101);
+
+INSERT INTO Products (PRODUCT_ID, PRODUCT_NAME, PRICE, CATEGORY_ID, STOCK, SUPPLIER_ID, ADDED_DATE, Categories_CATEGORY_ID, Suppliers_SUPPLIER_ID)
+VALUES (2002, 'Coffee Maker Deluxe', 89.99, 2, 75, 102, TO_DATE('2023-01-10', 'YYYY-MM-DD'), 2, 102);
+
+INSERT INTO Products (PRODUCT_ID, PRODUCT_NAME, PRICE, CATEGORY_ID, STOCK, SUPPLIER_ID, ADDED_DATE, Categories_CATEGORY_ID, Suppliers_SUPPLIER_ID)
+VALUES (2003, 'The Great Novel', 24.99, 3, 200, 103, TO_DATE('2023-01-15', 'YYYY-MM-DD'), 3, 103);
+
+INSERT INTO Products (PRODUCT_ID, PRODUCT_NAME, PRICE, CATEGORY_ID, STOCK, SUPPLIER_ID, ADDED_DATE, Categories_CATEGORY_ID, Suppliers_SUPPLIER_ID)
+VALUES (2004, 'Designer Jeans', 89.99, 4, 100, 104, TO_DATE('2023-01-20', 'YYYY-MM-DD'), 4, 104);
+
+INSERT INTO Products (PRODUCT_ID, PRODUCT_NAME, PRICE, CATEGORY_ID, STOCK, SUPPLIER_ID, ADDED_DATE, Categories_CATEGORY_ID, Suppliers_SUPPLIER_ID)
+VALUES (2005, 'Pro Tennis Racket', 129.99, 5, 40, 105, TO_DATE('2023-01-25', 'YYYY-MM-DD'), 5, 105);
+
+INSERT INTO Products (PRODUCT_ID, PRODUCT_NAME, PRICE, CATEGORY_ID, STOCK, SUPPLIER_ID, ADDED_DATE, Categories_CATEGORY_ID, Suppliers_SUPPLIER_ID)
+VALUES (2006, 'Premium Skin Cream', 59.99, 6, 120, 106, TO_DATE('2023-01-30', 'YYYY-MM-DD'), 6, 106);
+
+//Orders Inserts
+INSERT INTO Orders (ORDER_ID, CUSTOMER_ID, EMPLOYEE_ID, TOTAL_AMOUNT, PAYMENT_METHOD, SHIPPING_ADDRESS, Employees_EMPLOYEE_ID, Customers_CUSTOMER_ID)
+VALUES (3001, 1001, 501, 1389.98, 'Credit Card', '123 Main St, Boston, MA 02108', 501, 1001);
+
+INSERT INTO Orders (ORDER_ID, CUSTOMER_ID, EMPLOYEE_ID, TOTAL_AMOUNT, PAYMENT_METHOD, SHIPPING_ADDRESS, Employees_EMPLOYEE_ID, Customers_CUSTOMER_ID)
+VALUES (3002, 1002, 502, 179.98, 'PayPal', '456 Oak Ave, Seattle, WA 98101', 502, 1002);
+
+INSERT INTO Orders (ORDER_ID, CUSTOMER_ID, EMPLOYEE_ID, TOTAL_AMOUNT, PAYMENT_METHOD, SHIPPING_ADDRESS, Employees_EMPLOYEE_ID, Customers_CUSTOMER_ID)
+VALUES (3003, 1003, 503, 49.98, 'Debit Card', '789 Pine St, Austin, TX 78701', 503, 1003);
+
+INSERT INTO Orders (ORDER_ID, CUSTOMER_ID, EMPLOYEE_ID, TOTAL_AMOUNT, PAYMENT_METHOD, SHIPPING_ADDRESS, Employees_EMPLOYEE_ID, Customers_CUSTOMER_ID)
+VALUES (3004, 1004, 504, 259.98, 'Credit Card', '101 Elm Rd, Portland, OR 97201', 504, 1004);
+
+INSERT INTO Orders (ORDER_ID, CUSTOMER_ID, EMPLOYEE_ID, TOTAL_AMOUNT, PAYMENT_METHOD, SHIPPING_ADDRESS, Employees_EMPLOYEE_ID, Customers_CUSTOMER_ID)
+VALUES (3005, 1005, 505, 119.98, 'PayPal', '202 Maple Dr, Atlanta, GA 30303', 505, 1005);
+
+INSERT INTO Orders (ORDER_ID, CUSTOMER_ID, EMPLOYEE_ID, TOTAL_AMOUNT, PAYMENT_METHOD, SHIPPING_ADDRESS, Employees_EMPLOYEE_ID, Customers_CUSTOMER_ID)
+VALUES (3006, 1006, 506, 89.99, 'Debit Card', '303 Birch Ln, Nashville, TN 37203', 506, 1006);
+
+//Order_Items Inserts
+INSERT INTO Order_Items (ORDER_ITEM_ID, ORDER_ID, PRODUCT_ID, QUANTITY, UNIT_PRICE, SUBTOTAL, DISCOUNT, Products_PRODUCT_ID, ProductsC_CATEGORY_ID, Products_SUPPLIER_ID1, Orders_ORDER_ID, Orders_EMPLOYEE_ID1, Orders_CUSTOMER_ID1)
+VALUES (4001, 3001, 2001, 1, 1299.99, 1299.99, 0.00, 2001, 1, 101, 3001, 501, 1001);
+
+INSERT INTO Order_Items (ORDER_ITEM_ID, ORDER_ID, PRODUCT_ID, QUANTITY, UNIT_PRICE, SUBTOTAL, DISCOUNT, Products_PRODUCT_ID, ProductsC_CATEGORY_ID, Products_SUPPLIER_ID1, Orders_ORDER_ID, Orders_EMPLOYEE_ID1, Orders_CUSTOMER_ID1)
+VALUES (4002, 3001, 2006, 1, 89.99, 89.99, 0.00, 2006, 6, 106, 3001, 501, 1001);
+
+INSERT INTO Order_Items (ORDER_ITEM_ID, ORDER_ID, PRODUCT_ID, QUANTITY, UNIT_PRICE, SUBTOTAL, DISCOUNT, Products_PRODUCT_ID, ProductsC_CATEGORY_ID, Products_SUPPLIER_ID1, Orders_ORDER_ID, Orders_EMPLOYEE_ID1, Orders_CUSTOMER_ID1)
+VALUES (4003, 3002, 2002, 2, 89.99, 179.98, 0.00, 2002, 2, 102, 3002, 502, 1002);
+
+INSERT INTO Order_Items (ORDER_ITEM_ID, ORDER_ID, PRODUCT_ID, QUANTITY, UNIT_PRICE, SUBTOTAL, DISCOUNT, Products_PRODUCT_ID, ProductsC_CATEGORY_ID, Products_SUPPLIER_ID1, Orders_ORDER_ID, Orders_EMPLOYEE_ID1, Orders_CUSTOMER_ID1)
+VALUES (4004, 3003, 2003, 2, 24.99, 49.98, 0.00, 2003, 3, 103, 3003, 503, 1003);
+
+INSERT INTO Order_Items (ORDER_ITEM_ID, ORDER_ID, PRODUCT_ID, QUANTITY, UNIT_PRICE, SUBTOTAL, DISCOUNT, Products_PRODUCT_ID, ProductsC_CATEGORY_ID, Products_SUPPLIER_ID1, Orders_ORDER_ID, Orders_EMPLOYEE_ID1, Orders_CUSTOMER_ID1)
+VALUES (4005, 3004, 2004, 2, 89.99, 179.98, 0.00, 2004, 4, 104, 3004, 504, 1004);
+
+INSERT INTO Order_Items (ORDER_ITEM_ID, ORDER_ID, PRODUCT_ID, QUANTITY, UNIT_PRICE, SUBTOTAL, DISCOUNT, Products_PRODUCT_ID, ProductsC_CATEGORY_ID, Products_SUPPLIER_ID1, Orders_ORDER_ID, Orders_EMPLOYEE_ID1, Orders_CUSTOMER_ID1)
+VALUES (4006, 3005, 2005, 1, 129.99, 129.99, 10.01, 2005, 5, 105, 3005, 505, 1005);
+
+
+// Queries
+//all products with their category names
+SELECT p.PRODUCT_NAME, p.PRICE, c.CATEGORY_NAME
+FROM Products p
+JOIN Categories c ON p.CATEGORY_ID = c.CATEGORY_ID
+ORDER BY p.PRICE DESC;
+
+//total sales amount by category
+SELECT c.CATEGORY_NAME, SUM(oi.SUBTOTAL) as TOTAL_SALES
+FROM Order_Items oi
+JOIN Products p ON oi.PRODUCT_ID = p.PRODUCT_ID
+JOIN Categories c ON p.CATEGORY_ID = c.CATEGORY_ID
+GROUP BY c.CATEGORY_NAME
+ORDER BY TOTAL_SALES DESC;
+
+//Customers with their total spending
+SELECT c.FULL_NAME, SUM(o.TOTAL_AMOUNT) as TOTAL_SPENT
+FROM Customers c
+JOIN Orders o ON c.CUSTOMER_ID = o.CUSTOMER_ID
+GROUP BY c.FULL_NAME
+ORDER BY TOTAL_SPENT DESC;
+
+//sales by employee
+SELECT e.FULL_NAME, COUNT(o.ORDER_ID) as TOTAL_ORDERS, SUM(o.TOTAL_AMOUNT) as TOTAL_SALES
+FROM Employees e
+LEFT JOIN Orders o ON e.EMPLOYEE_ID = o.EMPLOYEE_ID
+GROUP BY e.FULL_NAME
+ORDER BY TOTAL_SALES DESC;
+
+//Find most popular products by quantity sold
+SELECT p.PRODUCT_NAME, SUM(oi.QUANTITY) as TOTAL_QUANTITY
+FROM Products p
+JOIN Order_Items oi ON p.PRODUCT_ID = oi.PRODUCT_ID
+GROUP BY p.PRODUCT_NAME
+ORDER BY TOTAL_QUANTITY DESC;
+
+//products that have not been ordered yet
+SELECT p.PRODUCT_NAME, p.PRICE
+FROM Products p
+LEFT JOIN Order_Items oi ON p.PRODUCT_ID = oi.PRODUCT_ID
+WHERE oi.ORDER_ITEM_ID IS NULL;
+
+//customers who purchased Electronics products
+SELECT c.FULL_NAME
+FROM Customers c
+JOIN Orders o ON c.CUSTOMER_ID = o.CUSTOMER_ID
+JOIN Order_Items oi ON o.ORDER_ID = oi.ORDER_ID
+JOIN Products p ON oi.PRODUCT_ID = p.PRODUCT_ID
+JOIN Categories cat ON p.CATEGORY_ID = cat.CATEGORY_ID
+WHERE cat.CATEGORY_NAME = 'Electronics'
+GROUP BY c.FULL_NAME;
+
+//all orders with customer information
+SELECT o.ORDER_ID, c.FULL_NAME as CUSTOMER, o.TOTAL_AMOUNT, o.PAYMENT_METHOD
+FROM Orders o
+JOIN Customers c ON o.CUSTOMER_ID = c.CUSTOMER_ID
+ORDER BY o.ORDER_ID;
+
+//products priced higher than average
+SELECT PRODUCT_NAME, PRICE
+FROM Products
+WHERE PRICE > (SELECT AVG(PRICE) FROM Products)
+ORDER BY PRICE DESC;
+
+//product counts by department
+SELECT c.DEPARTMENT, COUNT(p.PRODUCT_ID) as PRODUCT_COUNT
+FROM Categories c
+JOIN Products p ON c.CATEGORY_ID = p.CATEGORY_ID
+GROUP BY c.DEPARTMENT
+ORDER BY PRODUCT_COUNT DESC;
+
+//suppliers and the categories they supply
+SELECT s.COMPANY_NAME as SUPPLIER, c.CATEGORY_NAME
+FROM Suppliers s
+JOIN Products p ON s.SUPPLIER_ID = p.SUPPLIER_ID
+JOIN Categories c ON p.CATEGORY_ID = c.CATEGORY_ID
+GROUP BY s.COMPANY_NAME, c.CATEGORY_NAME
+ORDER BY s.COMPANY_NAME;
+
+//order details with product information
+SELECT o.ORDER_ID, p.PRODUCT_NAME, oi.QUANTITY, oi.UNIT_PRICE, oi.SUBTOTAL
+FROM Orders o
+JOIN Order_Items oi ON o.ORDER_ID = oi.ORDER_ID
+JOIN Products p ON oi.PRODUCT_ID = p.PRODUCT_ID
+ORDER BY o.ORDER_ID;
+
+//Customer loyalty
+SELECT LOYALTY_LEVEL, COUNT(*) as CUSTOMER_COUNT
+FROM Customers
+GROUP BY LOYALTY_LEVEL
+ORDER BY CUSTOMER_COUNT DESC;
+
+//average product price by category
+SELECT c.CATEGORY_NAME, AVG(p.PRICE) as AVERAGE_PRICE
+FROM Categories c
+JOIN Products p ON c.CATEGORY_ID = p.CATEGORY_ID
+GROUP BY c.CATEGORY_NAME
+ORDER BY AVERAGE_PRICE DESC;
+
